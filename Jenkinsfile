@@ -14,7 +14,7 @@ pipeline {
 
     stage('Docker login') {
       steps {
-        sh 'docker login -u hazza090 -p dckr_pat_wJikeqky-eQo9cE-hFP2pbjOGTQ'
+        sh 'docker login -u hazza090 dckr_pat_5RKeOZ2dvlhOOafxeJh_uYRZqgA'
       }
     }
 
