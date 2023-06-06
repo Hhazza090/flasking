@@ -1,4 +1,9 @@
 pipeline {
+
+  environment {
+    registry = "hazza090/flask_app"
+    
+  }
   agent {
     node {
       label 'docker'
