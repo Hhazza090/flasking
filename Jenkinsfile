@@ -2,8 +2,10 @@ pipeline {
 
   environment {
     registry = "hazza090/flask_app"
-    
+    registryCredentials = "docker"
+    cluster_name = "skillstorms"
   }
+  
   agent {
     node {
       label 'docker'
@@ -17,23 +19,23 @@ pipeline {
       }
     }
 
-    stage('Docker login') {
-      steps {
-        sh 'docker login -u hazza090 dckr_pat_5RKeOZ2dvlhOOafxeJh_uYRZqgA'
+    stage ('Build Stage') {
+       steps {
+        script {
+            dockerImage = docker.build(registry)
+        }
+       }
+    }  
+
+    stage('Deployment Stage') {
+      steps{
+        script {
+            docker.withRegistry('', registryCredentials) {
+                dockerImage.push()
+            }
+
+        }
       }
     }
-
-    stage('Docker Build') {
-      steps {
-        sh 'docker build -t flask_app .'
-      }
-    }
-
-    stage('Docker Push') {
-      steps {
-        sh 'docker push hazza090/flask_app .'
-      }
-    }
-
   }
-}
+} 
