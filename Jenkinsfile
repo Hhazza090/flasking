@@ -3,7 +3,8 @@ pipeline {
   environment {
     registry = "hazza090/flask_app"
     registryCredentials = "docker"
-    cluster_name = "skillstorms"
+    cluster_name = "skillstorm"
+    namespace = "hazza090"
   }
   
   agent {
@@ -35,6 +36,25 @@ pipeline {
             }
 
         }
+      }
+    }
+
+    stage('kubernetes') {
+      steps {
+        withCredentials([aws(accessKeyVariable: 'AWS_CCESS_KEY_ID', credentialsID: 'AWS', secretKeyVariable: "AWS_SECRET_ACCESS_KEY")]) {
+            // some block
+          sh "aws eks --region us-east-1 update-kubeconfig --name ${cluster_name}"
+          script {
+            try {
+              sh "kubectl create namespace ${namespace}"
+            }
+            catch (Exception e) {
+              echo "Error / namespace already created"
+            }
+          }
+        }
+        sh "kubectl appl -f ./deployment.yaml -n ${namespace}"
+        sh "kubectl -n ${namespace} rollout restart deployment flaskcontainer"
       }
     }
   }
