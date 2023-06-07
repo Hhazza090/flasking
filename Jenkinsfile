@@ -39,10 +39,9 @@ pipeline {
       }
     }
 
-    stage('kubernetes') {
+    stage('Kubernetes') {
       steps {
-        withCredentials([aws(accessKeyVariable: 'AWS_CCESS_KEY_ID', credentialsID: 'AWS', secretKeyVariable: "AWS_SECRET_ACCESS_KEY")]) {
-            // some block
+        withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'AWS', secretKeyVariable: "AWS_SECRET_ACCESS_KEY")]) {
           sh "aws eks --region us-east-1 update-kubeconfig --name ${cluster_name}"
           script {
             try {
@@ -52,9 +51,9 @@ pipeline {
               echo "Error / namespace already created"
             }
           }
+          sh "kubectl apply -f deployment.yaml -n ${namespace}"
+          sh "kubectl -n ${namespace} rollout restart deployment hharmonflask"
         }
-        sh "kubectl appl -f deployment.yaml -n ${namespace}"
-        sh "kubectl -n ${namespace} rollout restart deployment hharmonflask"
       }
     }
   }
