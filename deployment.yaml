@@ -1,0 +1,57 @@
+apiVersion: apps/v1 
+kind: Deployment 
+metadata: 
+  name:  hharmonflask
+  namespace: hazza090
+  labels: 
+    app:  hharmonflask 
+spec: 
+  selector: 
+    matchLabels: 
+      app: hharmonflask 
+  replicas: 1 
+  strategy: 
+    rollingUpdate: 
+      maxSurge: 25% 
+      maxUnavailable: 25% 
+    type: RollingUpdate
+  template: 
+    metadata: 
+      labels: 
+        app:  hharmonflask 
+    spec: 
+      containers: 
+      - name:  hharmonflask 
+        image:  hazza090/flask_app 
+        resources: 
+          requests: 
+            cpu: 100m 
+            memory: 100Mi 
+          limits: 
+            cpu: 100m 
+            memory: 100Mi 
+        ports: 
+        - containerPort:  5000 
+          name:  hharmonflask 
+        imagePullPolicy: Always 
+      restartPolicy: Always 
+ 
+--- 
+apiVersion: v1 
+kind: Service 
+metadata: 
+  name: hharmonflask 
+  namespace: hazza090
+spec: 
+  selector: 
+    app: hharmonflask 
+  type: LoadBalancer 
+  sessionAffinity: None 
+  sessionAffinityConfig: 
+    clientIP: 
+      timeoutSeconds: 10800 
+  ports: 
+  - name: hharmonflask 
+    protocol: TCP 
+    port: 80 
+    targetPort: 5000 
